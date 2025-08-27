@@ -1,12 +1,13 @@
-# Imagen base de compilación
+# Etapa 1: Build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+
 WORKDIR /src
 
-# Copiar la solución
-COPY *.sln ./
+# Copiar el archivo de solución
+COPY APIStock.sln ./
 
-# Copiar todos los proyectos
-COPY APIStock.API/*.csproj APIStock.API/
+# Copiar los proyectos
+COPY APIStock/*.csproj APIStock/
 COPY APIStock.Application/*.csproj APIStock.Application/
 COPY APIStock.Core/*.csproj APIStock.Core/
 COPY APIStock.Infrastructure/*.csproj APIStock.Infrastructure/
@@ -17,12 +18,18 @@ RUN dotnet restore
 # Copiar todo el código
 COPY . .
 
-# Publicar
-WORKDIR /src/APIStock.API
-RUN dotnet publish -c Release -o /app/publish
+# Compilar en Release
+RUN dotnet publish APIStock.sln -c Release -o /app/publish
 
-# Imagen final
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+# Etapa 2: Runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
+
+# Copiar desde la etapa de build
 COPY --from=build /app/publish .
-ENTRYPOINT ["dotnet", "APIStock.API.dll"]
+
+# Exponer el puerto (ajústalo según tu app)
+EXPOSE 5000
+
+# Comando para iniciar la aplicación
+ENTRYPOINT ["dotnet", "APIStock.dll"]
