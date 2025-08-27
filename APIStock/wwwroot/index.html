@@ -1,0 +1,214 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Stock de Calzado</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f7fa;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        select {
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        #stockTable_wrapper {
+            margin-top: 20px;
+        }
+
+        tfoot {
+            font-weight: bold;
+            background: #ecf0f1;
+        }
+
+        #chartContainer {
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <h1>📊 Dashboard - Stock de Calzado</h1>
+
+    <!-- Filtros -->
+    <div class="filters">
+        <label>
+            Estilo:
+            <select id="filterEstilo">
+                <option value="">Todos</option>
+            </select>
+        </label>
+        <label>
+            Color:
+            <select id="filterColor">
+                <option value="">Todos</option>
+            </select>
+        </label>
+    </div>
+
+    <!-- Tabla dinámica -->
+    <table id="stockTable" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>Estilo</th>
+                <th>Color</th>
+                <th>Talla</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+        <tfoot>
+            <tr>
+                <th colspan="3" style="text-align:right">TOTAL GENERAL:</th>
+                <th id="totalGeneral">0</th>
+            </tr>
+        </tfoot>
+    </table>
+
+    <!-- Gráfico -->
+    <div id="chartContainer">
+        <canvas id="stockChart"></canvas>
+    </div>
+
+    <script>
+        let stockData = [];
+        let dataTable;
+        let stockChart;
+
+        async function loadStock() {
+            const response = await fetch('/api/stock'); // Ajusta la ruta si es necesario
+            stockData = await response.json();
+
+            // Filtros dinámicos
+            const estilos = [...new Set(stockData.map(i => i.estilo))];
+            const colores = [...new Set(stockData.map(i => i.color))];
+
+            estilos.forEach(e => $('#filterEstilo').append(`<option value="${e}">${e}</option>`));
+            colores.forEach(c => $('#filterColor').append(`<option value="${c}">${c}</option>`));
+
+            // Inicializar DataTable
+            dataTable = $('#stockTable').DataTable({
+                data: stockData,
+                columns: [
+                    { data: 'estilo' },
+                    { data: 'color' },
+                    { data: 'talla' },
+                    { data: 'total' }
+                ],
+                paging: true,
+                searching: true,
+                order: [[0, 'asc'], [1, 'asc'], [2, 'asc']],
+                dom: 'Bfrtip',
+                buttons: [
+                    { extend: 'excelHtml5', text: '📥 Exportar Excel' },
+                    { extend: 'pdfHtml5', text: '📄 Exportar PDF' },
+                    { extend: 'print', text: '🖨 Imprimir' }
+                ],
+                footerCallback: function (row, data) {
+                    let total = data.reduce((sum, item) => sum + parseInt(item.total), 0);
+                    $(this.api().column(3).footer()).html(total);
+                }
+            });
+
+            renderChart(stockData);
+        }
+
+        function applyFilters() {
+            const estilo = $('#filterEstilo').val();
+            const color = $('#filterColor').val();
+
+            let filteredData = stockData;
+            if (estilo) filteredData = filteredData.filter(i => i.estilo === estilo);
+            if (color) filteredData = filteredData.filter(i => i.color === color);
+
+            dataTable.clear().rows.add(filteredData).draw();
+            renderChart(filteredData);
+        }
+
+        function renderChart(data) {
+            if (stockChart) stockChart.destroy();
+
+            // Agrupar por Estilo -> (Color + Talla)
+            const estilos = [...new Set(data.map(i => i.estilo))];
+            const grupos = {};
+
+            data.forEach(item => {
+                if (!grupos[item.estilo]) grupos[item.estilo] = {};
+                const key = `${item.color} - T${item.talla}`;
+                grupos[item.estilo][key] = (grupos[item.estilo][key] || 0) + parseInt(item.total);
+            });
+
+            // Dataset por combinación de Color+Talla
+            const subcategorias = [...new Set(data.map(i => `${i.color} - T${i.talla}`))];
+
+            const baseColors = [
+                "#3498db", "#e74c3c", "#2ecc71", "#9b59b6",
+                "#f1c40f", "#1abc9c", "#e67e22", "#34495e"
+            ];
+
+            const datasets = subcategorias.map((sub, i) => {
+                return {
+                    label: sub,
+                    data: estilos.map(est => grupos[est]?.[sub] || 0),
+                    backgroundColor: baseColors[i % baseColors.length],
+                    stack: 'Stack 1'
+                };
+            });
+
+            const ctx = document.getElementById('stockChart').getContext('2d');
+            stockChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: estilos,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Stock agrupado por Estilo (apilado por Color y Talla)'
+                        },
+                        legend: { position: 'top' }
+                    },
+                    scales: {
+                        x: { stacked: true },
+                        y: { stacked: true, beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        $('#filterEstilo, #filterColor').on('change', applyFilters);
+
+        loadStock();
+    </script>
+</body>
+</html>
