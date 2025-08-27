@@ -1,0 +1,4 @@
+C:\Users\MZAVALA\source\repos\APIStock\APIStock.Core\bin\Release\net8.0\publish\APIStock.Core.dll
+C:\Users\MZAVALA\source\repos\APIStock\APIStock.Core\bin\Release\net8.0\publish\APIStock.Core.deps.json
+C:\Users\MZAVALA\source\repos\APIStock\APIStock.Core\bin\Release\net8.0\publish\APIStock.Core.pdb
+C:\Users\MZAVALA\source\repos\APIStock\APIStock.Core\bin\Release\net8.0\publish\Microsoft.Extensions.DependencyInjection.Abstractions.dll

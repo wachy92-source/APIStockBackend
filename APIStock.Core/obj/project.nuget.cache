@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "PqXVYMiGz8s=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\MZAVALA\\source\\repos\\APIStock\\APIStock.Core\\APIStock.Core.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\MZAVALA\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\9.0.8\\microsoft.extensions.dependencyinjection.abstractions.9.0.8.nupkg.sha512"
+  ],
+  "logs": []
+}
