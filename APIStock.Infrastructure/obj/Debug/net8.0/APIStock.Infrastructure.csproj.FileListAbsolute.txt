@@ -1,0 +1,15 @@
+C:\Users\MZAVALA\source\repos\APIStock\APIStock.Infrastructure\bin\Debug\net8.0\APIStock.Infrastructure.deps.json
+C:\Users\MZAVALA\source\repos\APIStock\APIStock.Infrastructure\bin\Debug\net8.0\APIStock.Infrastructure.dll
+C:\Users\MZAVALA\source\repos\APIStock\APIStock.Infrastructure\bin\Debug\net8.0\APIStock.Infrastructure.pdb
+C:\Users\MZAVALA\source\repos\APIStock\APIStock.Infrastructure\obj\Debug\net8.0\APIStock.Infrastructure.csproj.AssemblyReference.cache
+C:\Users\MZAVALA\source\repos\APIStock\APIStock.Infrastructure\obj\Debug\net8.0\APIStock.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\MZAVALA\source\repos\APIStock\APIStock.Infrastructure\obj\Debug\net8.0\APIStock.Infrastructure.AssemblyInfoInputs.cache
+C:\Users\MZAVALA\source\repos\APIStock\APIStock.Infrastructure\obj\Debug\net8.0\APIStock.Infrastructure.AssemblyInfo.cs
+C:\Users\MZAVALA\source\repos\APIStock\APIStock.Infrastructure\obj\Debug\net8.0\APIStock.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\MZAVALA\source\repos\APIStock\APIStock.Infrastructure\obj\Debug\net8.0\APIStock.Infrastructure.dll
+C:\Users\MZAVALA\source\repos\APIStock\APIStock.Infrastructure\obj\Debug\net8.0\refint\APIStock.Infrastructure.dll
+C:\Users\MZAVALA\source\repos\APIStock\APIStock.Infrastructure\obj\Debug\net8.0\APIStock.Infrastructure.pdb
+C:\Users\MZAVALA\source\repos\APIStock\APIStock.Infrastructure\obj\Debug\net8.0\ref\APIStock.Infrastructure.dll
+C:\Users\MZAVALA\source\repos\APIStock\APIStock.Infrastructure\bin\Debug\net8.0\APIStock.Core.dll
+C:\Users\MZAVALA\source\repos\APIStock\APIStock.Infrastructure\bin\Debug\net8.0\APIStock.Core.pdb
+C:\Users\MZAVALA\source\repos\APIStock\APIStock.Infrastructure\obj\Debug\net8.0\APIStock.CC60B7A4.Up2Date
