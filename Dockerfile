@@ -2,18 +2,27 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copiar csproj y restaurar dependencias
-COPY *.sln .
-COPY APIStock/*.csproj APIStock/
+# Copiar la solución
+COPY *.sln ./
+
+# Copiar todos los proyectos
+COPY APIStock.API/*.csproj APIStock.API/
+COPY APIStock.Application/*.csproj APIStock.Application/
+COPY APIStock.Core/*.csproj APIStock.Core/
+COPY APIStock.Infrastructure/*.csproj APIStock.Infrastructure/
+
+# Restaurar paquetes
 RUN dotnet restore
 
-# Copiar el resto del código y compilar
+# Copiar todo el código
 COPY . .
-WORKDIR /src/APIStock
+
+# Publicar
+WORKDIR /src/APIStock.API
 RUN dotnet publish -c Release -o /app/publish
 
-# Imagen final de ejecución
+# Imagen final
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
-ENTRYPOINT ["dotnet", "APIStock.dll"]
+ENTRYPOINT ["dotnet", "APIStock.API.dll"]
